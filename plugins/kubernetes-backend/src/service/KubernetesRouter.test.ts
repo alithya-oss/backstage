@@ -73,12 +73,25 @@ describe('API integration tests', () => {
   const happyK8SResult = {
     items: [{ clusterOne: { pods: [{ metadata: { name: 'pod1' } }] } }],
   };
+  const auth = {
+    providers: {
+      microsoft: {
+        test: {
+          tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
+          clientId: 'microsoft-entra-id-enterprise-application-client-id',
+          clientSecret:
+            'microsoft-entra-id-enterprise-application-client-secret',
+        },
+      },
+    },
+  };
   const minimalValidConfigService = mockServices.rootConfig.factory({
     data: {
       kubernetes: {
         serviceLocatorMethod: { type: 'multiTenant' },
         clusterLocatorMethods: [],
       },
+      auth,
     },
   });
   const withClusters = (clusters: ClusterDetails[]) =>
@@ -134,7 +147,6 @@ describe('API integration tests', () => {
         }),
       }),
     }));
-
     const { server } = await startTestBackend({
       features: [
         minimalValidConfigService,
@@ -933,6 +945,7 @@ metadata:
                 serviceLocatorMethod: { type: 'unsupported' },
                 clusterLocatorMethods: [{ type: 'config', clusters: [] }],
               },
+              auth,
             },
           }),
           import('@backstage/plugin-kubernetes-backend'),
